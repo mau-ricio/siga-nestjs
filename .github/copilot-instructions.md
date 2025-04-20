@@ -1,0 +1,36 @@
+# Copilot Instructions
+
+This project is a NestJS application with TypeORM and PostgreSQL, implementing multitenancy using a single database. For local development, use SQLite as the database. Follow these guidelines when generating code:
+
+1. **Multitenancy**:
+   - Use middleware to extract `tenant_id` from headers or query parameters.
+   - Use interceptors to inject `tenant_id` into the request context.
+   - Repositories should be scoped (REQUEST) and filter data by `tenant_id`.
+
+2. **Naming and Language**:
+   - Keep all names (entities, variables, files, etc.) in English.
+   - Write comments in English.
+
+3. **Architecture**:
+   - Respect clean architecture and SOLID principles.
+   - Keep a clear separation of responsibilities between controllers, services, and repositories.
+
+4. **Entities and Services**:
+   - Entities should extend `TenantBase` and use `@TenantEntity()`, without explicitly declaring `tenantId`.
+   - Include a comment at the top of the class:
+     ```ts
+     // tenantId is automatically included by TenantBase
+     ```
+   - Services should extend `TenantBaseService<T>` and inject the `Repository<T>` to automatically inherit tenant filtering and tenantId population.
+
+5. **Best Practices**:
+   - Use validation with `class-validator`.
+   - Configure proper authentication and authorization.
+   - Document APIs with Swagger.
+
+6. **Future Goals**:
+   - Add support for migrations for database versioning.
+   - Implement caching with Redis.
+   - Write unit and e2e tests.
+
+Make sure the generated code aligns with these guidelines.
