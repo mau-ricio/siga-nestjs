@@ -4,22 +4,24 @@ import { Repository } from 'typeorm';
 import { Tenant } from './entities/tenant.entity';
 import { CreateTenantDto } from './dto/create-tenant.dto';
 import { UpdateTenantDto } from './dto/update-tenant.dto';
+import { BaseService } from '../shared/services/base.service';
 
 @Injectable()
-export class TenantsService {
+export class TenantsService extends BaseService<Tenant> {
   constructor(
     @InjectRepository(Tenant, 'admin')
-    private readonly repository: Repository<Tenant>,
-  ) {}
+    repository: Repository<Tenant>,
+  ) {
+    super(repository);
+  }
 
   create(dto: CreateTenantDto): Promise<Tenant> {
-    // Link to existing Database by id
-    const tenant = this.repository.create({
+    // Link to existing Database by id via base create
+    return super.create({
       name: dto.name,
       status: dto.status,
       database: { id: dto.databaseId } as any,
     });
-    return this.repository.save(tenant);
   }
 
   findAll(): Promise<Tenant[]> {
@@ -35,8 +37,7 @@ export class TenantsService {
   }
 
   async update(id: string, dto: UpdateTenantDto): Promise<Tenant> {
-    await this.repository.update(id, dto as any);
-    return this.findOne(id);
+    return super.update(id, dto) as Promise<Tenant>;
   }
 
   async remove(id: string): Promise<void> {

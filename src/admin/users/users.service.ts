@@ -4,33 +4,23 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { BaseService } from '../shared/services/base.service';
 
 @Injectable()
-export class UsersService {
+export class UsersService extends BaseService<User> {
   constructor(
     @InjectRepository(User, 'admin')
-    private readonly repository: Repository<User>,
-  ) {}
-
-  create(createUserDto: CreateUserDto): Promise<User> {
-    const user = this.repository.create(createUserDto);
-    return this.repository.save(user);
+    repository: Repository<User>,
+  ) {
+    super(repository);
   }
 
-  findAll(): Promise<User[]> {
-    return this.repository.find();
+  // Override to preserve DTO typings
+  create(dto: CreateUserDto): Promise<User> {
+    return super.create(dto);
   }
 
-  findOne(id: string): Promise<User | null> {
-    return this.repository.findOneBy({ id });
-  }
-
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<User | null> {
-    await this.repository.update(id, updateUserDto);
-    return this.findOne(id);
-  }
-
-  remove(id: string): Promise<void> {
-    return this.repository.delete(id).then(() => undefined);
+  async update(id: string, dto: UpdateUserDto): Promise<User | null> {
+    return super.update(id, dto);
   }
 }
