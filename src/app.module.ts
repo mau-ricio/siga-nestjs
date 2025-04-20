@@ -4,12 +4,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TenantMiddleware } from './shared/middlewares/tenant.middleware';
 import { TenantInterceptor } from './shared/interceptors/tenant.interceptor';
-import { UsersModule } from './users/users.module';
+import { UsersModule } from './admin/users/users.module';
+import { SharedModule } from './shared/shared.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { TenantsModule } from './admin/tenants/tenants.module';
+import { DatabasesModule } from './admin/databases/databases.module';
 
 @Module({
-  // Database connection: SQLite for dev, PostgreSQL for production
   imports: [
     TypeOrmModule.forRoot({
       ...(process.env.NODE_ENV === 'production'
@@ -28,7 +30,26 @@ import { AppService } from './app.service';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
+    TypeOrmModule.forRootAsync({
+      name: 'admin',
+      useFactory: () => ({
+        ...(process.env.NODE_ENV === 'production'
+          ? {
+              type: process.env.ADMINDBTYPE as any,
+              url: process.env.ADMINDBURL,
+            }
+          : {
+              type: 'sqlite',
+              database: path.resolve(process.cwd(), 'admin.sqlite'),
+            }),
+        entities: [__dirname + '/admin/**/*.entity{.ts,.js}'],
+        synchronize: true,
+      }),
+    }),
+    SharedModule,
     UsersModule,
+    TenantsModule,
+    DatabasesModule,
   ],
   controllers: [AppController],
   providers: [

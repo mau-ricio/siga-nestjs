@@ -22,6 +22,9 @@ This project is a NestJS application with TypeORM and PostgreSQL, implementing m
      // tenantId is automatically included by TenantBase
      ```
    - Services should extend `TenantBaseService<T>` and inject the `Repository<T>` to automatically inherit tenant filtering and tenantId population.
+   - Include timestamps and soft deletes in entities.
+   - Admin entities will not be tenant aware: do not extend `TenantBase` or use the `@TenantEntity()` decorator for admin entities.
+   - Ensure that all admin entities are properly documented to reflect their non-tenant aware nature.
 
 5. **Best Practices**:
    - Use validation with `class-validator`.

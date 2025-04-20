@@ -19,6 +19,8 @@ async function bootstrap() {
       'x-tenant-id',
     )
     .addTag('users')
+    .addTag('tenants')
+    .addTag('databases')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   // Require x-tenant-id header for all endpoints

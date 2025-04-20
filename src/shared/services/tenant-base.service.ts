@@ -1,7 +1,7 @@
 import { Injectable, Inject, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
-import { Repository, FindOptionsWhere, DeepPartial } from 'typeorm';
+import { Repository, FindOptionsWhere, DeepPartial, DataSource } from 'typeorm';
 import { TenantBase } from '../entities/tenant-base.entity';
 
 @Injectable({ scope: Scope.REQUEST })
@@ -10,12 +10,17 @@ export class TenantBaseService<T extends TenantBase & { id: string }> {
 
   constructor(
     @Inject(REQUEST) private readonly request: Request,
-    protected readonly repository: Repository<T>,
+    protected repository: Repository<T>,
   ) {
     // Extract tenantId from middleware-injected property or header
     const fromMiddleware = (this.request as any).tenantId;
     const fromHeader = this.request.headers['x-tenant-id'] as string;
     this.tenantId = (fromMiddleware as string) || fromHeader;
+    // Replace injected repository with tenant-specific repository
+    const conn = (this.request as any).tenantConnection as DataSource;
+    if (conn) {
+      this.repository = conn.getRepository<T>(this.repository.metadata.target as any);
+    }
   }
 
   async findAll(): Promise<T[]> {
