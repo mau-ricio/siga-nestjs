@@ -1,4 +1,4 @@
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import * as path from 'path';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_INTERCEPTOR } from '@nestjs/core';
@@ -59,6 +59,9 @@ import { DatabasesModule } from './admin/databases/databases.module';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(TenantMiddleware).forRoutes('*');
+    consumer
+      .apply(TenantMiddleware)
+      .exclude({ path: 'admin/(.*)', method: RequestMethod.ALL })
+      .forRoutes('*');
   }
 }

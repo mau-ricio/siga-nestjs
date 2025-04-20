@@ -6,7 +6,7 @@ import { UpdateDatabaseDto } from './dto/update-database.dto';
 import { Database } from './entities/database.entity';
 
 @ApiTags('databases')
-@Controller('databases')
+@Controller('admin/databases')
 export class DatabasesController {
   constructor(private readonly service: DatabasesService) {}
 

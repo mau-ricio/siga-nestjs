@@ -6,7 +6,7 @@ import { UpdateTenantDto } from './dto/update-tenant.dto';
 import { Tenant } from './entities/tenant.entity';
 
 @ApiTags('tenants')
-@Controller('tenants')
+@Controller('admin/tenants')
 export class TenantsController {
   constructor(private readonly service: TenantsService) {}
 
