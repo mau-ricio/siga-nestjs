@@ -27,9 +27,12 @@ This project is a NestJS application with TypeORM and PostgreSQL, implementing m
    - Ensure that all admin entities are properly documented to reflect their non-tenant aware nature.
 
 5. **Best Practices**:
-   - Use validation with `class-validator`.
-   - Configure proper authentication and authorization.
-   - Document APIs with Swagger.
+- Use validation with `class-validator`.
+- Configure proper authentication and authorization:
+  - Use two JWT strategies: TenantJwtStrategy (guard 'tenant-jwt') and AdminJwtStrategy (guard 'admin-jwt').
+  - TenantJwtStrategy uses `TENANT_JWT_SECRET` to sign tokens and protects tenant-aware controllers with `AuthGuard('tenant-jwt')`.
+  - AdminJwtStrategy uses `ADMIN_JWT_SECRET` to sign tokens and protects admin controllers with `AuthGuard('admin-jwt')`.
+- Document APIs with Swagger.
 
 6. **Future Goals**:
    - Add support for migrations for database versioning.

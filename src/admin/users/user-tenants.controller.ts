@@ -1,11 +1,13 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, HttpCode, HttpStatus, NotFoundException, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, HttpCode, HttpStatus, NotFoundException, UsePipes, ValidationPipe, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 import { UserTenantsService } from './user-tenants.service';
 import { CreateUserTenantDto } from './dto/create-user-tenant.dto';
 import { UpdateUserTenantDto } from './dto/update-user-tenant.dto';
 import { UserTenant } from './entities/user-tenant.entity';
 
 @ApiTags('User Tenants')
+@UseGuards(AuthGuard('admin-jwt')) // Protect all routes in this controller
 @Controller('admin/users/:userId/tenants')
 export class UserTenantsController {
   constructor(private readonly userTenantsService: UserTenantsService) {}

@@ -10,9 +10,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TenantsModule } from './admin/tenants/tenants.module';
 import { DatabasesModule } from './admin/databases/databases.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
+    AuthModule,
     TypeOrmModule.forRoot({
       ...(process.env.NODE_ENV === 'production'
         ? {

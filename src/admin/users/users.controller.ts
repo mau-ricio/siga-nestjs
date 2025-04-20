@@ -1,11 +1,14 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete, HttpCode, HttpStatus, NotFoundException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
 @ApiTags('users')
+@UseGuards(AuthGuard('admin-jwt')) // Protect all routes in this controller
 @Controller('admin/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
