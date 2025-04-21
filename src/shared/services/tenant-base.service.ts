@@ -1,26 +1,26 @@
 import { Injectable, Inject, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
-import { Repository, FindOptionsWhere, DeepPartial, DataSource } from 'typeorm';
+import { DataSource, EntityTarget, DeepPartial } from 'typeorm';
 import { TenantBase } from '../entities/tenant-base.entity';
+import { TenantRepository } from '../../tenant-aware/tenant-repository';
 
 @Injectable({ scope: Scope.REQUEST })
 export class TenantBaseService<T extends TenantBase & { id: string }> {
   protected readonly tenantId: string;
+  protected repository: TenantRepository<T>;
 
   constructor(
     @Inject(REQUEST) private readonly request: Request,
-    protected repository: Repository<T>,
+    dataSource: DataSource,
+    entity: EntityTarget<T>,
   ) {
-    // Extract tenantId from middleware-injected property or header
     const fromMiddleware = (this.request as any).tenantId;
     const fromHeader = this.request.headers['x-tenant-id'] as string;
     this.tenantId = (fromMiddleware as string) || fromHeader;
-    // Replace injected repository with tenant-specific repository
-    const conn = (this.request as any).tenantConnection as DataSource;
-    if (conn) {
-      this.repository = conn.getRepository<T>(this.repository.metadata.target as any);
-    }
+
+    // Use the custom repository
+    this.repository = new TenantRepository(entity, dataSource, this.tenantId);
   }
 
   async findAll(): Promise<T[]> {

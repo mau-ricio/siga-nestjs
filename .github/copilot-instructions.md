@@ -6,8 +6,8 @@ This project is a NestJS application with TypeORM and PostgreSQL, implementing m
    - Use middleware to extract `tenant_id` from headers or query parameters.
    - Use interceptors to inject `tenant_id` into the request context.
    - Repositories should be scoped (REQUEST) and filter data by `tenant_id`.
-   - tenant aware artifacts should be put on folder tenant-aware
-   - admin artifacts (non tenant aware) should be put on folder admin
+   - Tenant-aware artifacts (e.g., controllers, modules, and services specific to tenants) should be placed in the tenant-aware folder. Base classes or shared utilities (e.g., TenantBaseService, TenantRepository) that enforce tenant filtering should be placed in the shared folder under appropriate subdirectories (e.g., shared/services)
+   - Admin artifacts (non-tenant aware) should be placed in the admin folder.
 
 2. **Naming and Language**:
    - Keep all names (entities, variables, files, etc.) in English.
