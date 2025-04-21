@@ -8,7 +8,7 @@ import { UpdateAdminUserDto } from './dto/update-admin-user.dto';
 import { AdminUser } from './admin-user.entity';
 
 @ApiTags('Admin Users')
-@ApiBearerAuth()
+@ApiBearerAuth('admin-jwt')
 @UseGuards(AuthGuard('admin-jwt'))
 @Controller('admin-users')
 export class AdminUserController {

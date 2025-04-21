@@ -1,18 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AdminJwtStrategy extends PassportStrategy(Strategy, 'admin-jwt') {
-  constructor(private readonly configService: ConfigService) {
+  private readonly logger = new Logger(AdminJwtStrategy.name);
+
+  constructor() {
+    const secret = process.env.ADMIN_JWT_SECRET;
+    if (!secret) {
+      throw new Error('ADMIN_JWT_SECRET is not defined in the environment variables');
+    }
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: configService.get<string>('ADMIN_JWT_SECRET') || 'default_admin_jwt_secret',
+      ignoreExpiration: false,
+      secretOrKey: secret,
     });
   }
 
   async validate(payload: any) {
-    return { userId: payload.sub, ...payload };
+    this.logger.debug(`Validating JWT payload: ${JSON.stringify(payload)}`);
+    return { userId: payload.sub, username: payload.username, role: payload.role };
   }
 }

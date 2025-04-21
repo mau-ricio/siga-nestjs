@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete, HttpCode, HttpStatus, NotFoundException, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { TenantsService } from './tenants.service';
 import { CreateTenantDto } from './dto/create-tenant.dto';
@@ -7,6 +7,7 @@ import { UpdateTenantDto } from './dto/update-tenant.dto';
 import { Tenant } from './entities/tenant.entity';
 
 @ApiTags('tenants')
+@ApiBearerAuth('admin-jwt') //uses the token admin-jwt to validate
 @UseGuards(AuthGuard('admin-jwt')) // Protect all routes in this controller
 @Controller('admin/tenants')
 export class TenantsController {

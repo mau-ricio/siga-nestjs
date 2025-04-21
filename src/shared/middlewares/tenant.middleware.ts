@@ -1,18 +1,71 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+// filepath: /home/mauricio/dev/siga-nestjs/src/shared/middlewares/tenant.middleware.ts
+import { Injectable, NestMiddleware, Logger } from '@nestjs/common'; // Import Logger
 import { Request, Response, NextFunction } from 'express';
 import { ConnectionProviderService } from '../services/connection-provider.service';
+import { JwtService } from '@nestjs/jwt'; // Import JwtService
+import { ConfigService } from '@nestjs/config'; // Import ConfigService
 
 @Injectable()
 export class TenantMiddleware implements NestMiddleware {
-  constructor(private readonly connectionProvider: ConnectionProviderService) {}
+  private readonly logger = new Logger(TenantMiddleware.name); // Add logger
+
+  constructor(
+    private readonly connectionProvider: ConnectionProviderService,
+    private readonly jwtService: JwtService, // Inject JwtService
+    private readonly configService: ConfigService, // Inject ConfigService
+  ) {}
+
   async use(req: Request, res: Response, next: NextFunction) {
-    const tenantId = req.headers['x-tenant-id'] || req.query['tenant_id'];
+    let tenantId: string | undefined = undefined;
+    const authHeader = req.headers['authorization'];
+
+    // 1. Try extracting from JWT Bearer token
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+      try {
+        const secret = this.configService.get<string>('TENANT_JWT_SECRET');
+        if (!secret) {
+          this.logger.error('TENANT_JWT_SECRET not configured!');
+        } else {
+          const payload = await this.jwtService.verifyAsync(token, { secret });
+          tenantId = payload?.tenantId;
+          if (tenantId) {
+            this.logger.debug(`Tenant ID found in JWT: ${tenantId}`);
+          } else {
+             this.logger.warn('tenantId property missing from JWT payload.');
+          }
+        }
+      } catch (error) {
+        // Ignore errors (like invalid/expired token), AuthGuard will handle rejection
+        this.logger.warn(`JWT verification failed in middleware: ${error.message}`);
+      }
+    }
+
+    // 2. Fallback to header or query parameter (if JWT didn't provide tenantId)
+    if (!tenantId) {
+      tenantId = (req.headers['x-tenant-id'] as string) || (req.query['tenant_id'] as string);
+      if (tenantId) {
+         this.logger.debug(`Tenant ID found in header/query: ${tenantId}`);
+      }
+    }
+
+    // 3. Attach tenantId and connection to request if found
     if (tenantId) {
       (req as any).tenantId = tenantId;
-      const connection = await this.connectionProvider.getConnection(tenantId as string);
-      (req as any).tenantConnection = connection;
-      (req as any).tenantManager = connection.manager;
+      try {
+         const connection = await this.connectionProvider.getConnection(tenantId);
+         (req as any).tenantConnection = connection;
+         (req as any).tenantManager = connection.manager;
+         this.logger.debug(`Attached connection for tenant: ${tenantId}`);
+      } catch (error) {
+         this.logger.error(`Failed to get connection for tenant ${tenantId}: ${error.message}`);
+         // Decide how to handle connection errors - maybe block request?
+         // For now, just log and continue, service might fail later.
+      }
+    } else {
+       this.logger.warn('Tenant ID could not be determined by middleware.');
     }
-    next();
+
+    next(); // Proceed to guards, interceptors, etc.
   }
 }

@@ -1,36 +1,27 @@
-import { ApiBody, ApiTags } from '@nestjs/swagger';
-import { Controller, Post, Body, UseGuards, Request, Get } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
+import { ApiBody, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { TenantJwtAuthGuard } from './guards/tenant-jwt.guard';
-import { AdminJwtAuthGuard } from './guards/admin-jwt.guard';
-import { LoginDto } from './dto/login.dto';
+import { LoginAdminUserDto } from './dto/login-admin-user.dto';
+import { LoginTenantUserDto } from './dto/login-tenant-user.dto';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @ApiBody({ type: LoginDto })
-  @Post('login')
-  async tenantLogin(@Body() loginDto: LoginDto) {
-    return this.authService.tenantLogin(loginDto);
-  }
-
-  @ApiBody({ type: LoginDto })
+  @ApiOperation({ summary: 'Admin login' })
+  @ApiBody({ type: LoginAdminUserDto })
+  @ApiResponse({ status: 200, description: 'Admin login successful' })
   @Post('admin/login')
-  async adminLogin(@Body() loginDto: LoginDto) {
-    return this.authService.adminLogin(loginDto);
+  async adminLogin(@Body() loginAdminUserDto: LoginAdminUserDto) {
+    return this.authService.adminLogin(loginAdminUserDto);
   }
 
-  @UseGuards(TenantJwtAuthGuard)
-  @Get('validate')
-  async validateTenantToken(@Request() req) {
-    return req.user;
-  }
-
-  @UseGuards(AdminJwtAuthGuard)
-  @Get('admin/validate')
-  async validateAdminToken(@Request() req) {
-    return req.user;
+  @ApiOperation({ summary: 'Tenant login' })
+  @ApiBody({ type: LoginTenantUserDto })
+  @ApiResponse({ status: 200, description: 'Tenant login successful' })
+  @Post('tenant/login')
+  async tenantLogin(@Body() loginTenantUserDto: LoginTenantUserDto) {
+    return this.authService.tenantLogin(loginTenantUserDto);
   }
 }

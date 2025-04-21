@@ -1,34 +1,31 @@
+// filepath: /home/mauricio/dev/siga-nestjs/src/auth/auth.module.ts
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
+import { JwtModule } from '@nestjs/jwt'; // Import JwtModule
 import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
-import { TenantJwtStrategy } from './strategies/tenant-jwt.strategy';
 import { AdminJwtStrategy } from './strategies/admin-jwt.strategy';
-import { TenantJwtAuthGuard } from './guards/tenant-jwt.guard';
-import { AdminJwtAuthGuard } from './guards/admin-jwt.guard';
+import { TenantJwtStrategy } from './strategies/tenant-jwt.strategy';
+import { AdminUserModule } from '../admin/admin-users/admin-user.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
 
 @Module({
   imports: [
+    PassportModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('TENANT_JWT_SECRET'), // Assuming one secret for now
+      }),
+      inject: [ConfigService],
+    }),
+    AdminUserModule,
     ConfigModule,
-    PassportModule.register({}),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('TENANT_JWT_SECRET'),
-        signOptions: { expiresIn: '3600s' },
-      }),
-    }),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('ADMIN_JWT_SECRET'),
-        signOptions: { expiresIn: '3600s' },
-      }),
-    }),
   ],
-  providers: [TenantJwtStrategy, AdminJwtStrategy, TenantJwtAuthGuard, AdminJwtAuthGuard],
-  exports: [PassportModule, TenantJwtAuthGuard, AdminJwtAuthGuard],
+  controllers: [AuthController],
+  providers: [AuthService, AdminJwtStrategy, TenantJwtStrategy],
+  // Export JwtModule along with others
+  exports: [AuthService, PassportModule, JwtModule],
 })
 export class AuthModule {}

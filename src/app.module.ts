@@ -1,21 +1,25 @@
 import { Module, NestModule, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
-import * as path from 'path';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { APP_INTERCEPTOR } from '@nestjs/core';
-import { TenantMiddleware } from './shared/middlewares/tenant.middleware';
-import { TenantInterceptor } from './shared/interceptors/tenant.interceptor';
-import { UsersModule } from './tenant-aware/users/users.module';
-import { SharedModule } from './shared/shared.module';
+import { ConfigModule } from '@nestjs/config'; // Import ConfigModule
+import * as path from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { SharedModule } from './shared/shared.module';
+import { UsersModule } from './tenant-aware/users/users.module';
 import { TenantsModule } from './admin/tenants/tenants.module';
 import { DatabasesModule } from './admin/databases/databases.module';
 import { AdminUserModule } from './admin/admin-users/admin-user.module';
 import { AuthModule } from './auth/auth.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { TenantInterceptor } from './shared/interceptors/tenant.interceptor';
+import { TenantMiddleware } from './shared/middlewares/tenant.middleware';
 
 @Module({
   imports: [
-    AuthModule,
+    ConfigModule.forRoot({ // Configure ConfigModule
+      isGlobal: true,      // Make it global
+      envFilePath: '.env', // Specify .env file if needed
+    }),
     TypeOrmModule.forRoot({
       ...(process.env.NODE_ENV === 'production'
         ? {
@@ -53,19 +57,23 @@ import { AuthModule } from './auth/auth.module';
     UsersModule,
     TenantsModule,
     DatabasesModule,
-    AdminUserModule
+    AdminUserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
-    { provide: APP_INTERCEPTOR, useClass: TenantInterceptor },
+     { provide: APP_INTERCEPTOR, useClass: TenantInterceptor }, // Temporarily remove global interceptor
   ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(TenantMiddleware)
-      .exclude({ path: 'admin/(.*)', method: RequestMethod.ALL })
+      .exclude(
+        { path: 'admin/*', method: RequestMethod.ALL },
+        { path: 'auth/admin/*', method: RequestMethod.ALL },
+      )
       .forRoutes('*');
   }
 }
