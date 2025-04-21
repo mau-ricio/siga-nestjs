@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Database } from './entities/database.entity';
 import { CreateDatabaseDto } from './dto/create-database.dto';
 import { UpdateDatabaseDto } from './dto/update-database.dto';
-import { BaseService } from '../shared/services/base.service';
+import { BaseService } from '../../shared/services/base.service';
 
 @Injectable()
 export class DatabasesService extends BaseService<Database> {

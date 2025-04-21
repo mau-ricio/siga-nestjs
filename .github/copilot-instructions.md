@@ -6,6 +6,8 @@ This project is a NestJS application with TypeORM and PostgreSQL, implementing m
    - Use middleware to extract `tenant_id` from headers or query parameters.
    - Use interceptors to inject `tenant_id` into the request context.
    - Repositories should be scoped (REQUEST) and filter data by `tenant_id`.
+   - tenant aware artifacts should be put on folder tenant-aware
+   - admin artifacts (non tenant aware) should be put on folder admin
 
 2. **Naming and Language**:
    - Keep all names (entities, variables, files, etc.) in English.
@@ -25,6 +27,7 @@ This project is a NestJS application with TypeORM and PostgreSQL, implementing m
    - Include timestamps and soft deletes in entities.
    - Admin entities will not be tenant aware: do not extend `TenantBase` or use the `@TenantEntity()` decorator for admin entities.
    - Ensure that all admin entities are properly documented to reflect their non-tenant aware nature.
+   - All DTOs and controllers needs to have decorators for Swagger documentation.
 
 5. **Best Practices**:
 - Use validation with `class-validator`.

@@ -4,12 +4,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TenantMiddleware } from './shared/middlewares/tenant.middleware';
 import { TenantInterceptor } from './shared/interceptors/tenant.interceptor';
-import { UsersModule } from './admin/users/users.module';
+import { UsersModule } from './tenant-aware/users/users.module';
 import { SharedModule } from './shared/shared.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TenantsModule } from './admin/tenants/tenants.module';
 import { DatabasesModule } from './admin/databases/databases.module';
+import { AdminUserModule } from './admin/admin-users/admin-user.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
@@ -52,6 +53,7 @@ import { AuthModule } from './auth/auth.module';
     UsersModule,
     TenantsModule,
     DatabasesModule,
+    AdminUserModule
   ],
   controllers: [AppController],
   providers: [

@@ -18,9 +18,6 @@ async function bootstrap() {
       { type: 'apiKey', name: 'x-tenant-id', in: 'header', description: 'Tenant ID header' },
       'x-tenant-id',
     )
-    .addTag('users')
-    .addTag('tenants')
-    .addTag('databases')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   // Require x-tenant-id header for all endpoints
