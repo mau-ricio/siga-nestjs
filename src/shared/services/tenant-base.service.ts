@@ -12,7 +12,7 @@ export class TenantBaseService<T extends TenantBase & { id: string }> {
   private readonly logger = new Logger(TenantBaseService.name);
 
 constructor(
-    @Inject(REQUEST) private readonly request: Request,
+    @Inject(REQUEST) protected readonly request: Request,
     dataSource: DataSource,
     entity: EntityTarget<T>,
   ) {

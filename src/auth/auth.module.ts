@@ -7,6 +7,7 @@ import { PassportModule } from '@nestjs/passport';
 import { AdminJwtStrategy } from './strategies/admin-jwt.strategy';
 import { TenantJwtStrategy } from './strategies/tenant-jwt.strategy';
 import { AdminUserModule } from '../admin/admin-users/admin-user.module';
+import { UsersModule } from '../tenant-aware/users/users.module'; // Import UsersModule
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 
@@ -21,6 +22,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       inject: [ConfigService],
     }),
     AdminUserModule,
+    UsersModule, // Add UsersModule to the imports
     ConfigModule,
   ],
   controllers: [AuthController],

@@ -1,18 +1,13 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm'; // Remove temporarily
-import { UsersService } from './users.service'; // Remove temporarily
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
-import { User } from './entities/user.entity'; // Remove temporarily
-import { AuthModule } from '../../auth/auth.module';
-import { AuthGuard } from '@nestjs/passport'; // Remove temporarily
+import { User } from './entities/user.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User]), // Remove temporarily
-    AuthModule,
-  ],
+  imports: [TypeOrmModule.forFeature([User])],
   controllers: [UsersController],
-  providers: [ UsersService ],
-  exports: [UsersService], // Remove temporarily
+  providers: [UsersService],
+  exports: [UsersService], // Ensure UsersService is exported
 })
 export class UsersModule {}

@@ -71,8 +71,8 @@ export class AppModule implements NestModule {
     consumer
       .apply(TenantMiddleware)
       .exclude(
-        { path: 'admin/*', method: RequestMethod.ALL },
-        { path: 'auth/admin/*', method: RequestMethod.ALL },
+        { path: 'admin/*path', method: RequestMethod.ALL },
+        { path: 'auth/admin/*path', method: RequestMethod.ALL },
       )
       .forRoutes('*');
   }
