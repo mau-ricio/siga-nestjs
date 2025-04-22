@@ -8,7 +8,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagg
 @ApiTags('users')
 @Controller('users')
 @ApiBearerAuth('tenant-jwt')
-@UseGuards(AuthGuard('tenant-jwt'))
+//@UseGuards(AuthGuard('tenant-jwt'))
 export class UsersController {
   private readonly logger = new Logger(UsersController.name);
 

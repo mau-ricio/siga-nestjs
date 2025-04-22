@@ -73,6 +73,13 @@ cp .env.example .env
 npm run start:dev
 ```
 
+# Initial credentials
+
+User                 Password     Tenant-Slug
+admin.user@nest.js   admin$2211
+user@nest.js         user$2211    tenant01
+
+
 ## Roadmap
 
 - Unit and E2E tests
@@ -88,6 +95,20 @@ npm run start:dev
 - [x] JWT authentication per tenant and admin
 - [x] Swagger ready and fully functional
 - [ ] Automated testing (coming soon)
+
+
+## Development Strategy
+
+This repository maintains two primary development tracks:
+
+1. **Main Branch**: Contains the clean boilerplate implementation without any specialized business logic
+2. **Specialized Implementation**: Available in the `example-api` branch, showing a concrete implementation
+
+### When to Use Each Branch:
+
+- **Starting a New SaaS Project**: Fork or clone the main branch
+- **Learning by Example**: Review the specialized-system branch to see how to adapt the boilerplate
+- **Contributing**: Core improvements should target the main branch
 
 ## Contributing
 

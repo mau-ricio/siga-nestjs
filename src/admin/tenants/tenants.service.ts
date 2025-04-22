@@ -19,6 +19,8 @@ export class TenantsService extends BaseService<Tenant> {
     // Link to existing Database by id via base create
     return super.create({
       name: dto.name,
+      slug: dto.slug,
+      externalId: dto.externalId,
       status: dto.status,
       database: { id: dto.databaseId } as any,
     });

@@ -4,7 +4,7 @@ import { TenantStatus } from '../entities/tenant.entity';
 
 export class CreateTenantDto {
 
-  @ApiProperty({ example: 'tenantb' })
+  @ApiProperty({ example: 'tenant01' })
   @IsString()
   @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
     message: 'The slug must contain only lowercase letters, numbers, and hyphens, with no spaces or special characters.',
@@ -12,7 +12,7 @@ export class CreateTenantDto {
   @MaxLength(50)
   slug: string;
 
-  @ApiProperty({ example: 'Tenant B' })
+  @ApiProperty({ example: 'Tenant 01' })
   @IsString()
   name: string;
   

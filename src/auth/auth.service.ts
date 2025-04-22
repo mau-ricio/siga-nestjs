@@ -8,22 +8,25 @@ import { TenantsService } from '../admin/tenants/tenants.service'; // Import Ten
 import * as bcrypt from 'bcrypt';
 import { REQUEST } from '@nestjs/core'; // Import REQUEST
 import { Request } from 'express'; // Import Request
+import { ModuleRef } from '@nestjs/core'; // Import ModuleRef for lazy loading
 
 @Injectable()
 export class AuthService {
+  private usersService: UsersService;
+
   constructor(
     private readonly jwtService: JwtService,
     private readonly adminUserService: AdminUserService,
-    private readonly usersService: UsersService, // Inject UsersService
-    private readonly tenantsService: TenantsService, // Inject TenantsService
-    @Inject(REQUEST) private readonly request: Request & { tenantId?: string }, // Inject REQUEST
+    private readonly tenantsService: TenantsService,
+    private readonly moduleRef: ModuleRef, // Inject ModuleRef for lazy loading
+    @Inject(REQUEST) private readonly request: Request & { tenantId?: string },
   ) {}
 
   async adminLogin(loginAdminUserDto: LoginAdminUserDto) {
-    const { username, password } = loginAdminUserDto;
+    const { email, password } = loginAdminUserDto;
 
     // Validate admin credentials
-    const adminUser = await this.adminUserService.findOneByUsername(username);
+    const adminUser = await this.adminUserService.findOneByEmail(email);
     // Use bcrypt.compare for password validation
     if (!adminUser || !(await bcrypt.compare(password, adminUser.password))) {
       throw new UnauthorizedException('Invalid username or password');
@@ -33,6 +36,14 @@ export class AuthService {
     return {
       accessToken: this.jwtService.sign(payload, { secret: process.env.ADMIN_JWT_SECRET }),
     };
+  }
+
+  // Lazy load the UsersService only when needed
+  private getUsersService(): UsersService {
+    if (!this.usersService) {
+      this.usersService = this.moduleRef.get(UsersService, { strict: false });
+    }
+    return this.usersService;
   }
 
   async tenantLogin(loginTenantUserDto: LoginTenantUserDto, slug: string) {
@@ -47,8 +58,8 @@ export class AuthService {
     // Set tenantId in request scope for UsersService
     this.request.tenantId = tenant.id;
 
-    // Validate tenant credentials using UsersService
-    const user = await this.usersService.findOneByEmail(email); // Use findOneByEmail
+    // Validate tenant credentials using lazy loaded UsersService
+    const user = await this.getUsersService().findOneByEmail(email);
 
     if (!user || !(await bcrypt.compare(password, user.password))) { // Assuming user entity has password
       throw new UnauthorizedException('Invalid email or password'); // Update error message

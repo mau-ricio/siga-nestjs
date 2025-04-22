@@ -21,8 +21,8 @@ export class AdminUserService {
     return this.repository.findOne({ where: { id } });
   }
 
-  async findOneByUsername(username: string): Promise<AdminUser | null> {
-    return this.repository.findOne({ where: { username } });
+  async findOneByEmail(email: string): Promise<AdminUser | null> {
+    return this.repository.findOne({ where: { email } });
   }
 
   async create(dto: CreateAdminUserDto): Promise<AdminUser> {

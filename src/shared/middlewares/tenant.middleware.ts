@@ -49,14 +49,6 @@ export class TenantMiddleware implements NestMiddleware {
       }
     }
 
-    // 2.1 Fallback to request payload to provide tenantId)
-    if (!tenantId) {
-      tenantId = (req.body['tenantId'] as string);
-      if (tenantId) {
-         this.logger.debug(`Tenant ID found in request body: ${tenantId}`);
-      }
-    }
-
     // 3. Attach tenantId and connection to request if found
     if (tenantId) {
       (req as any).tenantId = tenantId;

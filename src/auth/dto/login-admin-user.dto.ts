@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class LoginAdminUserDto {
   @ApiProperty({ description: 'Admin username' })
   @IsString()
-  username: string;
+  email: string;
 
   @ApiProperty({ description: 'Admin password' })
   @IsString()
