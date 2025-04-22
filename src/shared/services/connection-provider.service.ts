@@ -22,7 +22,7 @@ export class ConnectionProviderService {
 
     // Load tenant and its database config
     const tenant = await this.tenantRepository.findOne({
-      where: { name: tenantId },
+      where: { id: tenantId },
       relations: ['database'],
     });
     if (!tenant) {

@@ -39,9 +39,10 @@ export class AuthService {
   }
 
   // Lazy load the UsersService only when needed
-  private getUsersService(): UsersService {
+  private async getUsersService(): Promise<UsersService> {
     if (!this.usersService) {
-      this.usersService = this.moduleRef.get(UsersService, { strict: false });
+      // Pass the current request context to properly resolve the REQUEST-scoped service
+      this.usersService = await this.moduleRef.resolve(UsersService, undefined, { strict: false });
     }
     return this.usersService;
   }
@@ -59,7 +60,8 @@ export class AuthService {
     this.request.tenantId = tenant.id;
 
     // Validate tenant credentials using lazy loaded UsersService
-    const user = await this.getUsersService().findOneByEmail(email);
+    const usersService = await this.getUsersService();
+    const user = await usersService.findOneByEmail(email);
 
     if (!user || !(await bcrypt.compare(password, user.password))) { // Assuming user entity has password
       throw new UnauthorizedException('Invalid email or password'); // Update error message

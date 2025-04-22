@@ -1,25 +1,14 @@
-import { Controller, Post, Body, Param, Query, Scope } from '@nestjs/common';
-import { ApiBody, ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
-import { AdminAuthService } from './admin-auth.service';
+import { Controller, Post, Body, Query, Scope } from '@nestjs/common';
+import { ApiBody, ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { TenantAuthService } from './tenant-auth.service';
-import { LoginAdminUserDto } from './dto/login-admin-user.dto';
 import { LoginTenantUserDto } from './dto/login-tenant-user.dto';
 
-@ApiTags('auth')
+@ApiTags('tenant-auth')
 @Controller({ path: 'auth', scope: Scope.REQUEST })
-export class AuthController {
+export class TenantAuthController {
   constructor(
-    private readonly adminAuthService: AdminAuthService,
     private readonly tenantAuthService: TenantAuthService,
   ) {}
-
-  @ApiOperation({ summary: 'Admin login' })
-  @ApiBody({ type: LoginAdminUserDto })
-  @ApiResponse({ status: 200, description: 'Admin login successful' })
-  @Post('admin/login')
-  async adminLogin(@Body() loginAdminUserDto: LoginAdminUserDto) {
-    return this.adminAuthService.login(loginAdminUserDto);
-  }
 
   @ApiOperation({ summary: 'Tenant login' })
   @ApiBody({ type: LoginTenantUserDto })

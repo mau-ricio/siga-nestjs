@@ -4,6 +4,7 @@ import { Request, Response, NextFunction } from 'express';
 import { ConnectionProviderService } from '../services/connection-provider.service';
 import { JwtService } from '@nestjs/jwt'; // Import JwtService
 import { ConfigService } from '@nestjs/config'; // Import ConfigService
+import { TenantsService } from '../../admin/tenants/tenants.service'; // Import TenantsService for slug resolution
 
 @Injectable()
 export class TenantMiddleware implements NestMiddleware {
@@ -13,6 +14,7 @@ export class TenantMiddleware implements NestMiddleware {
     private readonly connectionProvider: ConnectionProviderService,
     private readonly jwtService: JwtService, // Inject JwtService
     private readonly configService: ConfigService, // Inject ConfigService
+    private readonly tenantsService: TenantsService, // Inject TenantsService for tenant slug resolution
   ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
@@ -41,11 +43,34 @@ export class TenantMiddleware implements NestMiddleware {
       }
     }
 
-    // 2. Fallback to header or query parameter (if JWT didn't provide tenantId)
+    // 2. Fallback to header or query parameters (if JWT didn't provide tenantId)
     if (!tenantId) {
-      tenantId = (req.headers['x-tenant-id'] as string) || (req.query['tenant_id'] as string);
+      // First check for direct tenant ID in headers
+      tenantId = req.headers['x-tenant-id'] as string;
+      
+      // If no direct tenant ID, check for tenant slug
+      if (!tenantId) {
+        const slug = req.query['tenant_slug'] as string;
+        
+        if (slug) {
+          this.logger.debug(`Tenant slug found in query: ${slug}`);
+          try {
+            // Look up the tenant by slug using TenantsService
+            const tenant = await this.tenantsService.findOneBySlug(slug);
+            if (tenant) {
+              tenantId = tenant.id;
+              this.logger.debug(`Resolved tenant ID from slug: ${tenantId}`);
+            } else {
+              this.logger.warn(`Tenant with slug "${slug}" not found`);
+            }
+          } catch (error) {
+            this.logger.error(`Error resolving tenant from slug: ${error.message}`);
+          }
+        }
+      }
+      
       if (tenantId) {
-         this.logger.debug(`Tenant ID found in header/query: ${tenantId}`);
+        this.logger.debug(`Tenant ID determined: ${tenantId}`);
       }
     }
 

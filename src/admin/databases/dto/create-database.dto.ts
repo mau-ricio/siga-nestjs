@@ -11,7 +11,7 @@ export class CreateDatabaseDto {
   @IsEnum(DatabaseType)
   type: DatabaseType;
 
-  @ApiProperty({ example: 'postgres://user:pass@host:5432/dbname or sqlite:///path/to/db.sqlite' })
+  @ApiProperty({ example: 'postgres://user:pass@host:5432/dbname or sqlite://path/to/db.sqlite' })
   @IsString()
   url: string;
 }
