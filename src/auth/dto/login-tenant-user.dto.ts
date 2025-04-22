@@ -10,7 +10,4 @@ export class LoginTenantUserDto {
   @IsString()
   password: string;
 
-  @ApiProperty({ description: 'Tenant ID' })
-  @IsString()
-  tenantId: string;
 }

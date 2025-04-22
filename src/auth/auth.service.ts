@@ -1,10 +1,10 @@
-import { Injectable, UnauthorizedException, Inject } from '@nestjs/common';
+import { Injectable, UnauthorizedException, Inject, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginAdminUserDto } from './dto/login-admin-user.dto';
 import { LoginTenantUserDto } from './dto/login-tenant-user.dto';
 import { AdminUserService } from '../admin/admin-users/admin-user.service';
 import { UsersService } from '../tenant-aware/users/users.service'; // Import UsersService
-import { AdminUser } from '../admin/admin-users/admin-user.entity';
+import { TenantsService } from '../admin/tenants/tenants.service'; // Import TenantsService
 import * as bcrypt from 'bcrypt';
 import { REQUEST } from '@nestjs/core'; // Import REQUEST
 import { Request } from 'express'; // Import Request
@@ -15,6 +15,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly adminUserService: AdminUserService,
     private readonly usersService: UsersService, // Inject UsersService
+    private readonly tenantsService: TenantsService, // Inject TenantsService
     @Inject(REQUEST) private readonly request: Request & { tenantId?: string }, // Inject REQUEST
   ) {}
 
@@ -34,14 +35,17 @@ export class AuthService {
     };
   }
 
-  async tenantLogin(loginTenantUserDto: LoginTenantUserDto) {
-    const { email, password, tenantId } = loginTenantUserDto; // Use email instead of username
+  async tenantLogin(loginTenantUserDto: LoginTenantUserDto, slug: string) {
+    const { email, password } = loginTenantUserDto;
+
+    // Find tenant by slug using the dedicated method
+    const tenant = await this.tenantsService.findOneBySlug(slug);
+    if (!tenant) {
+      throw new UnauthorizedException(`Tenant with slug "${slug}" not found`);
+    }
 
     // Set tenantId in request scope for UsersService
-    // This assumes TenantMiddleware/Interceptor has already run for other requests,
-    // but for login, we get tenantId from the DTO.
-    // A more robust approach might involve a dedicated way to set context for login.
-    this.request.tenantId = tenantId;
+    this.request.tenantId = tenant.id;
 
     // Validate tenant credentials using UsersService
     const user = await this.usersService.findOneByEmail(email); // Use findOneByEmail
@@ -51,7 +55,7 @@ export class AuthService {
     }
 
     // Payload should include necessary info, respecting tenant context
-    const payload = { email: user.email, sub: user.id, tenantId: tenantId, role: 'tenant_user' }; // Use email, add sub and role
+    const payload = { email: user.email, sub: user.id, tenantId: tenant.id, role: 'tenant_user' }; // Use email, add sub and role
     return {
       accessToken: this.jwtService.sign(payload, { secret: process.env.TENANT_JWT_SECRET }),
     };

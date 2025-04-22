@@ -1,5 +1,5 @@
-import { Controller, Post, Body } from '@nestjs/common';
-import { ApiBody, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Post, Body, Param } from '@nestjs/common';
+import { ApiBody, ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginAdminUserDto } from './dto/login-admin-user.dto';
 import { LoginTenantUserDto } from './dto/login-tenant-user.dto';
@@ -20,8 +20,12 @@ export class AuthController {
   @ApiOperation({ summary: 'Tenant login' })
   @ApiBody({ type: LoginTenantUserDto })
   @ApiResponse({ status: 200, description: 'Tenant login successful' })
-  @Post('tenant/login')
-  async tenantLogin(@Body() loginTenantUserDto: LoginTenantUserDto) {
-    return this.authService.tenantLogin(loginTenantUserDto);
+  @ApiParam({ name: 'slug', description: 'Tenant slug identifier' })
+  @Post('tenant/:slug/login')
+  async tenantLogin(
+    @Param('slug') slug: string,
+    @Body() loginTenantUserDto: LoginTenantUserDto
+  ) {
+    return this.authService.tenantLogin(loginTenantUserDto, slug);
   }
 }

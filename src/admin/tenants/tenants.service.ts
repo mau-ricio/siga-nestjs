@@ -36,6 +36,14 @@ export class TenantsService extends BaseService<Tenant> {
     return tenant;
   }
 
+  async findOneBySlug(slug: string): Promise<Tenant | null> {
+    const tenant = await this.repository.findOne({ where: { slug } });
+    if (!tenant) {
+      return null;
+    }
+    return tenant;
+  }
+
   async update(id: string, dto: UpdateTenantDto): Promise<Tenant> {
     return super.update(id, dto) as Promise<Tenant>;
   }
