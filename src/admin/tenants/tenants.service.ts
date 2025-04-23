@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { Tenant } from './entities/tenant.entity';
 import { CreateTenantDto } from './dto/create-tenant.dto';
@@ -11,7 +11,7 @@ import { CreateUserDto } from '../../tenant-aware/users/dto/create-user.dto';
 @Injectable()
 export class TenantsService extends BaseService<Tenant> {
   constructor(
-    @InjectRepository(Tenant, 'admin')
+    @InjectRepository(Tenant)
     repository: Repository<Tenant>,
     private readonly dataSource: DataSource,
   ) {

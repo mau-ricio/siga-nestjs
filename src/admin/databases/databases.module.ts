@@ -5,7 +5,7 @@ import { DatabasesController } from './databases.controller';
 import { Database } from './entities/database.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Database], 'admin')],
+  imports: [TypeOrmModule.forFeature([Database])],
   controllers: [DatabasesController],
   providers: [DatabasesService],
   exports: [DatabasesService],

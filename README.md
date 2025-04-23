@@ -1,6 +1,6 @@
-# SaaS Boilerplate with Multitenancy (NestJS + TypeORM)
+# SaaS Boilerplate with Advanced Multitenancy (NestJS + TypeORM)
 
-This boilerplate is a solid starting point for building SaaS applications with full multitenancy support, clean architecture, and modern development practices using Node.js and NestJS.
+This boilerplate is a solid starting point for building SaaS applications with full advanced multitenancy support, clean architecture, and modern development practices using Node.js and NestJS. Read the section "How Multitenancy works" bellow.
 
 ## Purpose
 
@@ -48,13 +48,43 @@ src/
 - JWT for authentication
 - Swagger for interactive API documentation
 
-## How Multitenancy Works
+## How Advanced Multitenancy Works
 
-1. Admin registers a database (shared or dedicated).
-2. A new tenant is created and linked to one of the available databases.
-3. During login, the tenant's slug identifies the DB and generates a JWT.
-4. All subsequent requests automatically inject the correct tenantId into controllers/services.
-5. Tenant-aware entities use tenantId for access filtering.
+This project implements a sophisticated multi-tenancy strategy that gives you complete flexibility in database architecture:
+
+### Core Concept: Dynamic Database Connections
+
+Unlike traditional single-database or schema-based multi-tenancy, this architecture:
+
+1. **Maintains a central admin database** that stores tenant metadata and their database configurations
+2. **Dynamically creates connections** to different tenant databases at runtime
+3. **Completely isolates tenant data** in separate physical databases when needed
+
+### Request Flow
+
+1. Admin registers a database connection (can be shared or dedicated)
+2. A new tenant is created and linked to one of the available databases
+3. During tenant login, the system:
+   - Identifies the tenant by slug/domain
+   - Loads the tenant's database configuration
+   - Creates/retrieves a connection to that specific database
+   - Issues a JWT containing tenant information
+4. For authenticated requests:
+   - The JWT is validated and tenant information extracted
+   - `ConnectionProviderService` provides the correct database connection for that tenant
+   - All operations for that tenant only affect their assigned database
+   - Complete data isolation is maintained through physical separation
+
+### When To Use This Architecture
+
+This multi-tenancy approach is ideal for:
+
+- **B2B SaaS applications** with enterprise clients requiring stringent data isolation
+- **Regulated industries** (healthcare, finance) where data segregation is mandatory
+- **White-label solutions** where each client needs a customizable database setup
+- **Hybrid deployments** mixing on-premise and cloud databases for different clients
+
+For simpler B2C applications or smaller B2B solutions, you might consider using the simpler single-database approach with row-level filtering.
 
 ## Getting Started
 

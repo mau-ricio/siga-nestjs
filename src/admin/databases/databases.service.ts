@@ -9,7 +9,7 @@ import { BaseService } from '../../shared/services/base.service';
 @Injectable()
 export class DatabasesService extends BaseService<Database> {
   constructor(
-    @InjectRepository(Database, 'admin')
+    @InjectRepository(Database)
     repository: Repository<Database>,
   ) {
     super(repository);

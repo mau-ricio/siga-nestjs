@@ -5,7 +5,7 @@ import { TenantsController } from './tenants.controller';
 import { Tenant } from './entities/tenant.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Tenant], 'admin')],
+  imports: [TypeOrmModule.forFeature([Tenant])],
   controllers: [TenantsController],
   providers: [TenantsService],
   // Export both the service and the TypeOrmModule feature

@@ -10,7 +10,7 @@ export class ConnectionProviderService {
   private readonly connections: Map<string, Connection> = new Map();
 
   constructor(
-    @InjectRepository(Tenant, 'admin')
+    @InjectRepository(Tenant)
     private readonly tenantRepository: Repository<Tenant>,
   ) {}
 
@@ -36,7 +36,8 @@ export class ConnectionProviderService {
     const baseOptions: Partial<ConnectionOptions> = {
         name: tenantId,
         type: dbConfig.type as any, // Cast needed as type comes from DB
-        entities: [path.join(__dirname, '..', '..', '**', 'entities', '*.entity{.ts,.js}')],
+        // Only include tenant-aware entities, not admin entities
+        entities: [__dirname + '/tenant-aware/**/*.entity{.ts,.js}'],
         synchronize: true, // Consider disabling synchronize in production
     };
 

@@ -20,25 +20,8 @@ import { TenantMiddleware } from './shared/middlewares/tenant.middleware';
       isGlobal: true,      // Make it global
       envFilePath: '.env', // Specify .env file if needed
     }),
-    TypeOrmModule.forRoot({
-      ...(process.env.NODE_ENV === 'production'
-        ? {
-            type: 'postgres',
-            host: process.env.DB_HOST,
-            port: Number(process.env.DB_PORT) || 5432,
-            username: process.env.DB_USERNAME,
-            password: process.env.DB_PASSWORD,
-            database: process.env.DB_DATABASE,
-          }
-        : {
-            type: 'sqlite',
-            database: path.resolve(process.cwd(), 'dev.sqlite'),
-          }),
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
-    }),
     TypeOrmModule.forRootAsync({
-      name: 'admin',
+      // Default connection for admin entities - no name specified
       useFactory: () => ({
         ...(process.env.NODE_ENV === 'production'
           ? {
@@ -49,8 +32,8 @@ import { TenantMiddleware } from './shared/middlewares/tenant.middleware';
               type: 'sqlite',
               database: path.resolve(process.cwd(), 'admin.sqlite'),
             }),
-        entities: [__dirname + '/admin/**/*.entity{.ts,.js}'],
-        synchronize: true,
+        entities: [__dirname + '/admin/**/*.entity{.ts,.js}', __dirname + '/tenant-aware/**/*.entity{.ts,.js}' ],
+        synchronize: false,
       }),
     }),
     SharedModule,
