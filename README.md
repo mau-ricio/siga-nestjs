@@ -103,11 +103,63 @@ cp .env.example .env
 npm run start:dev
 ```
 
+## Database Migration System
+
+This project uses a dual migration system to handle both admin entities and tenant-aware entities separately:
+
+### Important Note
+
+TypeORM's `synchronize` option is **disabled** in both development and production environments. All database schema changes must be done through migrations to ensure data integrity and safer deployments.
+
+### Admin Migrations
+
+Admin migrations run on the default connection and manage admin entities:
+
+```bash
+# Generate a migration based on entity changes
+npm run migration:generate:admin -- src/database/migrations/admin/MigrationName
+
+# Create an empty migration file
+npm run migration:create:admin --name=MigrationName
+
+# Run all pending admin migrations
+npm run migration:run:admin
+
+# Revert the last applied admin migration
+npm run migration:revert:admin
+```
+
+### Tenant Migrations
+
+Tenant migrations run on each tenant database registered in your system:
+
+```bash
+# Create an empty tenant migration file
+npm run migration:create:admin --name=TenantMigrationName
+# Then manually move the file to src/database/migrations/tenant/
+
+# Run migrations on ALL tenant databases
+npm run migration:run:tenant
+```
+
+The tenant migration runner connects to the admin database, fetches all registered tenant databases, and applies migrations to each one sequentially.
+
+### Migration Best Practices
+
+1. Always test migrations in a development environment first
+2. Create separate migrations for admin and tenant changes
+3. For data migrations, consider backwards compatibility
+4. Add proper up/down methods to ensure reversibility
+5. Add comments to complex migrations explaining the changes
+
 # Initial credentials
 
-User                 Password     Tenant-Slug
+This application comes with a default admin user to access the admin area. Use these credentials to log in:
+
+User                 Password     
 admin.user@nest.js   admin$2211
-user@nest.js         user$2211    tenant01
+
+Note: Tenant users are not pre-created. They can be created together with tenant creation through the admin endpoints.
 
 
 ## Roadmap
