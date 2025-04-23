@@ -23,7 +23,10 @@
     "migration:create:admin": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:create src/database/migrations/admin/$npm_config_name",
     "migration:run:admin": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d typeorm-admin.config.ts",
     "migration:revert:admin": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d typeorm-admin.config.ts",
-    "migration:run:tenant": "node src/database/migrations/tenant-runner.js"
+    "migration:generate:tenant": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d typeorm-tenant-generator.config.ts",
+    "migration:create:tenant": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:create src/database/migrations/tenant/$npm_config_name",
+    "migration:run:tenant": "node src/database/migrations/tenant-runner.js",
+    "migration:revert:tenant": "node src/database/migrations/tenant-revert-runner.js"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

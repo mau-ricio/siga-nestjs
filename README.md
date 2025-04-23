@@ -134,15 +134,20 @@ npm run migration:revert:admin
 Tenant migrations run on each tenant database registered in your system:
 
 ```bash
-# Create an empty tenant migration file
-npm run migration:create:admin --name=TenantMigrationName
-# Then manually move the file to src/database/migrations/tenant/
+# Generate a migration based on tenant entity changes
+npm run migration:generate:tenant -- src/database/migrations/tenant/MigrationName
+
+# Or create an empty tenant migration file
+npm run migration:create:tenant --name=MigrationName
 
 # Run migrations on ALL tenant databases
 npm run migration:run:tenant
+
+# Revert the last migration on ALL tenant databases
+npm run migration:revert:tenant
 ```
 
-The tenant migration runner connects to the admin database, fetches all registered tenant databases, and applies migrations to each one sequentially.
+The tenant migration runner connects to the admin database, fetches all registered tenant databases, and applies migrations to each one sequentially. Similarly, the revert process will connect to each tenant database and revert the last applied migration.
 
 ### Migration Best Practices
 
