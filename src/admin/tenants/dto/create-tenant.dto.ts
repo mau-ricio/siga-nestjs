@@ -27,7 +27,7 @@ export class CreateTenantDto {
   @IsEnum(TenantStatus)
   status: TenantStatus;
 
-  @ApiProperty({ example: 'id from erp system that created tenant here' })
+  @ApiProperty({ description: 'id from erp system that created tenant here' })
   @IsOptional()
   @IsString()
   @MaxLength(100)

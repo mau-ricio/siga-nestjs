@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { AdminAuthController } from './admin-auth.controller';
 import { TenantAuthController } from './tenant-auth.controller';
 import { AdminAuthService } from './admin-auth.service';
@@ -11,6 +11,7 @@ import { AdminUserModule } from '../admin/admin-users/admin-user.module';
 import { UsersModule } from '../tenant-aware/users/users.module';
 import { TenantsModule } from '../admin/tenants/tenants.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { SharedModule } from '../shared/shared.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     UsersModule, // Only needed for TenantAuthService
     TenantsModule,
     ConfigModule,
+    forwardRef(() => SharedModule), // Add SharedModule using forwardRef to avoid circular dependencies
   ],
   controllers: [AdminAuthController, TenantAuthController],
   providers: [AdminAuthService, TenantAuthService, AdminJwtStrategy, TenantJwtStrategy],

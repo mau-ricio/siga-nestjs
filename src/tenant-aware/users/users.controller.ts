@@ -8,7 +8,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagg
 @ApiTags('users')
 @Controller('users')
 @ApiBearerAuth('tenant-jwt')
-//@UseGuards(AuthGuard('tenant-jwt'))
+@UseGuards(AuthGuard('tenant-jwt'))
 export class UsersController {
   private readonly logger = new Logger(UsersController.name);
 
@@ -39,8 +39,9 @@ export class UsersController {
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id); // Restore service call
   }
-
-  @ApiOperation({ summary: 'Update a user by ID' })
+  
+  
+  @ApiOperation({ summary: 'Update a user' })
   @ApiResponse({ status: 200, description: 'User updated successfully' })
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {

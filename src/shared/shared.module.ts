@@ -1,5 +1,5 @@
 // filepath: /home/mauricio/dev/siga-nestjs/src/shared/shared.module.ts
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ConnectionProviderService } from './services/connection-provider.service';
 import { TenantMiddleware } from './middlewares/tenant.middleware';
 import { TenantInterceptor } from './interceptors/tenant.interceptor';
@@ -10,7 +10,7 @@ import { AuthModule } from '../auth/auth.module'; // Import AuthModule
 @Module({
   imports: [
     ConfigModule,
-    TenantsModule,
+    forwardRef(() => TenantsModule), // Use forwardRef to avoid circular dependency
     AuthModule, // Add AuthModule here
   ],
   providers: [ConnectionProviderService, TenantMiddleware, TenantInterceptor],

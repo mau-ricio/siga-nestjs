@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SharedModule } from './shared/shared.module';
 import { UsersModule } from './tenant-aware/users/users.module';
+import { FriendsModule } from './tenant-aware/friends/friends.module';
 import { TenantsModule } from './admin/tenants/tenants.module';
 import { DatabasesModule } from './admin/databases/databases.module';
 import { AdminUserModule } from './admin/admin-users/admin-user.module';
@@ -16,9 +17,9 @@ import { TenantMiddleware } from './shared/middlewares/tenant.middleware';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ // Configure ConfigModule
-      isGlobal: true,      // Make it global
-      envFilePath: '.env', // Specify .env file if needed
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
     }),
     TypeOrmModule.forRootAsync({
       // Default connection for admin entities - no name specified
@@ -38,6 +39,7 @@ import { TenantMiddleware } from './shared/middlewares/tenant.middleware';
     }),
     SharedModule,
     UsersModule,
+    FriendsModule,
     TenantsModule,
     DatabasesModule,
     AdminUserModule,

@@ -10,12 +10,6 @@
         {
             "previewLimit": 50,
             "driver": "SQLite",
-            "name": "dev local",
-            "database": "./dev.sqlite"
-        },
-        {
-            "previewLimit": 50,
-            "driver": "SQLite",
             "name": "sharedDB",
             "database": "./sharedDB.sqlite"
         }

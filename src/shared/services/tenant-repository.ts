@@ -1,4 +1,4 @@
-import { Repository, DataSource, EntityTarget, DeepPartial, FindOptionsWhere } from 'typeorm';
+import { Repository, DataSource, EntityTarget, DeepPartial, FindOptionsWhere, SaveOptions } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { TenantBase } from '../entities/tenant-base.entity';
 
@@ -22,6 +22,23 @@ export class TenantRepository<T extends TenantBase> extends Repository<T> {
     options = options || {};
     options.where = { ...options.where, tenantId: this.tenantId };
     return super.findOne(options);
+  }
+
+  // Create a new entity with tenant ID automatically set
+  createWithTenant(entityLike: DeepPartial<T>): T {
+    // Create the entity using the parent's create method
+    const entity = super.create(entityLike);
+    // Set the tenantId
+    entity.tenantId = this.tenantId;
+    return entity;
+  }
+
+  // Create and save an entity with tenant ID automatically set
+  async createAndSave(entityLike: DeepPartial<T>, options?: SaveOptions): Promise<T> {
+    // Create with tenant ID
+    const entity = this.createWithTenant(entityLike);
+    // Save and return the entity
+    return this.save(entity, options);
   }
 
   // Override update method to enforce tenant filtering

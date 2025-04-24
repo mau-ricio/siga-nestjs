@@ -1,19 +1,24 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
-import { Repository, DataSource } from 'typeorm';
+import { Repository, DataSource, EntityManager } from 'typeorm';
 import { Tenant } from './entities/tenant.entity';
 import { CreateTenantDto } from './dto/create-tenant.dto';
 import { UpdateTenantDto } from './dto/update-tenant.dto';
 import { BaseService } from '../../shared/services/base.service';
 import { User } from '../../tenant-aware/users/entities/user.entity';
 import { CreateUserDto } from '../../tenant-aware/users/dto/create-user.dto';
+import { ConnectionProviderService } from '../../shared/services/connection-provider.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class TenantsService extends BaseService<Tenant> {
+  private readonly logger = new Logger(TenantsService.name);
+
   constructor(
     @InjectRepository(Tenant)
     repository: Repository<Tenant>,
     private readonly dataSource: DataSource,
+    private readonly connectionProviderService: ConnectionProviderService,
   ) {
     super(repository);
   }
@@ -37,35 +42,37 @@ export class TenantsService extends BaseService<Tenant> {
   }
 
   async createInitialUser(tenantId: string, userData: CreateUserDto): Promise<void> {
-    // Create a tenant-context query runner
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
+    this.logger.log(`Creating initial user for tenant ${tenantId}`);
     
     try {
-      // Start transaction
-      await queryRunner.startTransaction();
+      // Get the tenant database connection using ConnectionProviderService
+      const tenantConnection = await this.connectionProviderService.getConnection(tenantId);
       
-      // Create the user directly using the entity manager with tenantId set
-      const userRepository = queryRunner.manager.getRepository(User);
-      
-      // Create user entity with tenant ID
-      const user = userRepository.create({
-        ...userData,
-        tenantId, // Set the tenant ID explicitly
+      // Create a transaction using the tenant connection
+      await tenantConnection.transaction(async (transactionalEntityManager: EntityManager) => {
+        // Get a repository for the User entity within the tenant's database
+        const userRepository = transactionalEntityManager.getRepository(User);
+        
+        // Hash the password - using the same approach as UsersService
+        const salt = await bcrypt.genSalt(10); // Explicitly set salt rounds to 10 (bcrypt default)
+        const hashedPassword = await bcrypt.hash(userData.password, salt);
+        
+        // Create user entity with tenant ID and hashed password
+        const user = userRepository.create({
+          ...userData,
+          password: hashedPassword,
+          tenantId, // Set the tenant ID explicitly
+        });
+        
+        // Save the user in the tenant's database
+        this.logger.log('Saving initial user to tenant database');
+        await userRepository.save(user);
       });
       
-      // Save the user in the context of the transaction
-      await userRepository.save(user);
-      
-      // Commit the transaction
-      await queryRunner.commitTransaction();
+      this.logger.log(`Initial user for tenant ${tenantId} created successfully`);
     } catch (error) {
-      // Rollback transaction if there's an error
-      await queryRunner.rollbackTransaction();
+      this.logger.error(`Failed to create initial user for tenant ${tenantId}: ${error.message}`, error.stack);
       throw error;
-    } finally {
-      // Release the query runner
-      await queryRunner.release();
     }
   }
 

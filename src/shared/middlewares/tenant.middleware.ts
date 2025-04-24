@@ -69,6 +69,8 @@ export class TenantMiddleware implements NestMiddleware {
         }
       }
       
+      tenantId = 'c9048c5c-abe8-4e73-930d-3d12a323a439'; //just to test
+      
       if (tenantId) {
         this.logger.debug(`Tenant ID determined: ${tenantId}`);
       }
