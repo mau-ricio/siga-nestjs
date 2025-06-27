@@ -26,11 +26,15 @@ const adminMigrationDataSourceOptions: DataSourceOptions = {
 export const adminDataSource = new DataSource(adminMigrationDataSourceOptions);
 
 // Function to create tenant migration DataSource
-export const createTenantDataSource = (connectionOptions: DataSourceOptions): DataSource => {
+export const createTenantDataSource = (
+  connectionOptions: DataSourceOptions,
+): DataSource => {
   return new DataSource({
     ...connectionOptions,
     entities: [path.join(__dirname, '../tenant-aware/**/*.entity{.ts,.js}')],
-    migrations: [path.join(__dirname, '../database/migrations/tenant/*{.ts,.js}')],
+    migrations: [
+      path.join(__dirname, '../database/migrations/tenant/*{.ts,.js}'),
+    ],
     synchronize: false,
     logging: true,
   });

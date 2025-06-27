@@ -9,7 +9,9 @@ export class AdminJwtStrategy extends PassportStrategy(Strategy, 'admin-jwt') {
   constructor() {
     const secret = process.env.ADMIN_JWT_SECRET;
     if (!secret) {
-      throw new Error('ADMIN_JWT_SECRET is not defined in the environment variables');
+      throw new Error(
+        'ADMIN_JWT_SECRET is not defined in the environment variables',
+      );
     }
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -20,6 +22,10 @@ export class AdminJwtStrategy extends PassportStrategy(Strategy, 'admin-jwt') {
 
   async validate(payload: any) {
     this.logger.debug(`Validating JWT payload: ${JSON.stringify(payload)}`);
-    return { userId: payload.sub, username: payload.username, role: payload.role };
+    return {
+      userId: payload.sub,
+      username: payload.username,
+      role: payload.role,
+    };
   }
 }

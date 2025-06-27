@@ -1,6 +1,13 @@
 // filepath: src/admin/admin-users/admin-user.entity.ts
 // AdminUser entity is not tenant aware
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+} from 'typeorm';
 
 @Entity({ name: 'admin_users' })
 export class AdminUser {

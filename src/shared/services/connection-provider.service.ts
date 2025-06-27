@@ -12,7 +12,10 @@ import { Friend } from '../../tenant-aware/friends/entities/friend.entity';
  * Works in both .ts (dev) and .js (build) environments.
  */
 function loadTenantEntities(): Function[] {
-  const pattern = path.resolve(__dirname, '../../tenant-aware/**/*.entity.{ts,js}');
+  const pattern = path.resolve(
+    __dirname,
+    '../../tenant-aware/**/*.entity.{ts,js}',
+  );
   const files = glob.sync(pattern);
 
   const entities: Function[] = [];
@@ -27,12 +30,13 @@ function loadTenantEntities(): Function[] {
   }
 
   if (entities.length === 0) {
-    console.warn(`[loadTenantEntities] ⚠️ No entities loaded with pattern: ${pattern}`);
+    console.warn(
+      `[loadTenantEntities] ⚠️ No entities loaded with pattern: ${pattern}`,
+    );
   }
   console.warn(entities);
   return entities;
 }
-
 
 @Injectable()
 export class ConnectionProviderService {
@@ -76,9 +80,15 @@ export class ConnectionProviderService {
       // Always synchronize for SQLite to ensure tables are created
       synchronize: dbConfig.type === 'sqlite',
       // Log which entities are being used for this connection
-      migrations: process.env.NODE_ENV === 'production'
-        ? [path.resolve(process.cwd(), 'dist/database/migrations/tenant/*.js')]
-        : [],
+      migrations:
+        process.env.NODE_ENV === 'production'
+          ? [
+              path.resolve(
+                process.cwd(),
+                'dist/database/migrations/tenant/*.js',
+              ),
+            ]
+          : [],
       migrationsRun: process.env.NODE_ENV === 'production',
       // Enable detailed logging for all database operations during testing
       logging: ['query', 'error', 'schema'],
@@ -90,13 +100,18 @@ export class ConnectionProviderService {
       // Manually run migrations if not using migrationsRun option and log applied names
       if (!options.migrationsRun) {
         const executed = await dataSource.runMigrations();
-        executed.forEach(mig => this.logger.debug(`Executed migration: ${mig.name}`));
+        executed.forEach((mig) =>
+          this.logger.debug(`Executed migration: ${mig.name}`),
+        );
       }
       this.connections.set(tenantId, dataSource);
       this.logger.log(`Initialized connection for tenant ${tenantId}`);
       return dataSource;
     } catch (error) {
-      this.logger.error(`Connection error for ${tenantId}: ${error.message}`, error.stack);
+      this.logger.error(
+        `Connection error for ${tenantId}: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }

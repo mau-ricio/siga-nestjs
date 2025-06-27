@@ -45,16 +45,14 @@ export class UsersService extends TenantBaseService<User> {
     if (updateUserDto.password) {
       const salt = await bcrypt.genSalt();
       updateData.password = await bcrypt.hash(updateUserDto.password, salt);
-
     } else {
       // Ensure password is not accidentally set to null or undefined if not provided
       delete updateData.password;
     }
 
-
     if (Object.keys(updateData).length === 0) {
-        // Avoid unnecessary update calls if only id was passed or password was the only field and removed
-        return this.findOne(id); // Or throw an error/return null based on desired behavior
+      // Avoid unnecessary update calls if only id was passed or password was the only field and removed
+      return this.findOne(id); // Or throw an error/return null based on desired behavior
     }
 
     // Use the repository provided by TenantBaseService for tenant-aware update
@@ -63,8 +61,8 @@ export class UsersService extends TenantBaseService<User> {
     return this.findOne(id); // Fetch the updated entity
   }
 
-
-  async findOneByEmail(email: string): Promise<User | null> { // Changed return type to Promise<User | null>
+  async findOneByEmail(email: string): Promise<User | null> {
+    // Changed return type to Promise<User | null>
     await this.ensureRepositoryInitialized();
     return this.repository.findOne({ where: { email } });
   }

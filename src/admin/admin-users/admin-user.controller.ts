@@ -1,6 +1,24 @@
 // filepath: src/admin/admin-users/admin-user.controller.ts
-import { Controller, Get, Post, Put, Delete, Param, Body, UsePipes, ValidationPipe, UseGuards, NotFoundException } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  UsePipes,
+  ValidationPipe,
+  UseGuards,
+  NotFoundException,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+} from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { AdminUserService } from './admin-user.service';
 import { CreateAdminUserDto } from './dto/create-admin-user.dto';
@@ -16,7 +34,11 @@ export class AdminUserController {
 
   @Get()
   @ApiOperation({ summary: 'List all admin users' })
-  @ApiResponse({ status: 200, description: 'List of admin users', type: [AdminUser] })
+  @ApiResponse({
+    status: 200,
+    description: 'List of admin users',
+    type: [AdminUser],
+  })
   findAll(): Promise<AdminUser[]> {
     return this.service.findAll();
   }
@@ -35,7 +57,11 @@ export class AdminUserController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new admin user' })
-  @ApiResponse({ status: 201, description: 'The created admin user', type: AdminUser })
+  @ApiResponse({
+    status: 201,
+    description: 'The created admin user',
+    type: AdminUser,
+  })
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
   create(@Body() dto: CreateAdminUserDto): Promise<AdminUser> {
     return this.service.create(dto);
@@ -44,9 +70,16 @@ export class AdminUserController {
   @Put(':id')
   @ApiOperation({ summary: 'Update an existing admin user' })
   @ApiParam({ name: 'id', description: 'Admin user ID' })
-  @ApiResponse({ status: 200, description: 'The updated admin user', type: AdminUser })
+  @ApiResponse({
+    status: 200,
+    description: 'The updated admin user',
+    type: AdminUser,
+  })
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
-  async update(@Param('id') id: string, @Body() dto: UpdateAdminUserDto): Promise<AdminUser> {
+  async update(
+    @Param('id') id: string,
+    @Body() dto: UpdateAdminUserDto,
+  ): Promise<AdminUser> {
     const updatedUser = await this.service.update(id, dto);
     if (!updatedUser) {
       throw new NotFoundException(`Admin user with ID ${id} not found`);

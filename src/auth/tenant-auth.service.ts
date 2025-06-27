@@ -1,4 +1,10 @@
-import { Injectable, UnauthorizedException, Inject, Scope, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  Inject,
+  Scope,
+  Logger,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginTenantUserDto } from './dto/login-tenant-user.dto';
 import { UsersService } from '../tenant-aware/users/users.service';
@@ -23,7 +29,9 @@ export class TenantAuthService {
 
   async login(loginTenantUserDto: LoginTenantUserDto, slug: string) {
     const { email, password } = loginTenantUserDto;
-    this.logger.log(`Attempting login for email: ${email} with tenant slug: ${slug}`);
+    this.logger.log(
+      `Attempting login for email: ${email} with tenant slug: ${slug}`,
+    );
 
     // Find tenant by slug using the dedicated method
     const tenant = await this.tenantsService.findOneBySlug(slug);
@@ -39,35 +47,48 @@ export class TenantAuthService {
     let user: User | null = null;
     try {
       // Get the tenant-specific connection
-      const tenantConnection = await this.connectionProviderService.getConnection(tenant.id);
+      const tenantConnection =
+        await this.connectionProviderService.getConnection(tenant.id);
       this.logger.log(`Retrieved connection for tenant: ${tenant.id}`);
-      
+
       // Use the tenant connection to find the user directly
       const userRepository = tenantConnection.getRepository(User);
-      user = await userRepository.findOne({ where: { tenantId: tenant.id, email } });
-      
+      user = await userRepository.findOne({
+        where: { tenantId: tenant.id, email },
+      });
     } catch (error) {
-      this.logger.error(`Error searching for user in tenant database: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error searching for user in tenant database: ${error.message}`,
+        error.stack,
+      );
       throw new UnauthorizedException('Error during authentication');
     }
 
     if (!user) {
-      this.logger.warn(`No user found with email: ${email} for tenant: ${tenant.id}`);
+      this.logger.warn(
+        `No user found with email: ${email} for tenant: ${tenant.id}`,
+      );
       throw new UnauthorizedException('Invalid email or password');
     }
-    
-   
+
     const passwordMatches = await bcrypt.compare(password, user.password);
-    
+
     if (!passwordMatches) {
       this.logger.warn(`Password mismatch for user: ${email}`);
       throw new UnauthorizedException('Invalid email or password');
     }
 
     // Payload includes necessary info, respecting tenant context
-    const payload = { email: user.email, sub: user.id, tenantId: tenant.id, role: 'tenant_user' };
+    const payload = {
+      email: user.email,
+      sub: user.id,
+      tenantId: tenant.id,
+      role: 'tenant_user',
+    };
     return {
-      accessToken: this.jwtService.sign(payload, { secret: process.env.TENANT_JWT_SECRET }),
+      accessToken: this.jwtService.sign(payload, {
+        secret: process.env.TENANT_JWT_SECRET,
+      }),
     };
   }
 }

@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException, Inject, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  Inject,
+  NotFoundException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginAdminUserDto } from './dto/login-admin-user.dto';
 import { LoginTenantUserDto } from './dto/login-tenant-user.dto';
@@ -32,9 +37,15 @@ export class AuthService {
       throw new UnauthorizedException('Invalid username or password');
     }
 
-    const payload = { username: adminUser.username, sub: adminUser.id, role: 'admin' }; // Include user ID (sub) in payload
+    const payload = {
+      username: adminUser.username,
+      sub: adminUser.id,
+      role: 'admin',
+    }; // Include user ID (sub) in payload
     return {
-      accessToken: this.jwtService.sign(payload, { secret: process.env.ADMIN_JWT_SECRET }),
+      accessToken: this.jwtService.sign(payload, {
+        secret: process.env.ADMIN_JWT_SECRET,
+      }),
     };
   }
 
@@ -42,7 +53,11 @@ export class AuthService {
   private async getUsersService(): Promise<UsersService> {
     if (!this.usersService) {
       // Pass the current request context to properly resolve the REQUEST-scoped service
-      this.usersService = await this.moduleRef.resolve(UsersService, undefined, { strict: false });
+      this.usersService = await this.moduleRef.resolve(
+        UsersService,
+        undefined,
+        { strict: false },
+      );
     }
     return this.usersService;
   }
@@ -63,14 +78,22 @@ export class AuthService {
     const usersService = await this.getUsersService();
     const user = await usersService.findOneByEmail(email);
 
-    if (!user || !(await bcrypt.compare(password, user.password))) { // Assuming user entity has password
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      // Assuming user entity has password
       throw new UnauthorizedException('Invalid email or password'); // Update error message
     }
 
     // Payload should include necessary info, respecting tenant context
-    const payload = { email: user.email, sub: user.id, tenantId: tenant.id, role: 'tenant_user' }; // Use email, add sub and role
+    const payload = {
+      email: user.email,
+      sub: user.id,
+      tenantId: tenant.id,
+      role: 'tenant_user',
+    }; // Use email, add sub and role
     return {
-      accessToken: this.jwtService.sign(payload, { secret: process.env.TENANT_JWT_SECRET }),
+      accessToken: this.jwtService.sign(payload, {
+        secret: process.env.TENANT_JWT_SECRET,
+      }),
     };
   }
 }

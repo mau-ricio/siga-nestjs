@@ -1,5 +1,22 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, HttpCode, HttpStatus, NotFoundException, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { DatabasesService } from './databases.service';
 import { CreateDatabaseDto } from './dto/create-database.dto';
@@ -41,7 +58,10 @@ export class DatabasesController {
   @ApiOperation({ summary: 'Update a database config' })
   @ApiResponse({ status: 200, type: Database })
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() dto: UpdateDatabaseDto): Promise<Database> {
+  async update(
+    @Param('id') id: string,
+    @Body() dto: UpdateDatabaseDto,
+  ): Promise<Database> {
     const updated = await this.service.update(id, dto);
     if (!updated) {
       throw new NotFoundException(`Database config with id ${id} not found`);

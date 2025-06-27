@@ -34,12 +34,14 @@ export class TenantMiddleware implements NestMiddleware {
           if (tenantId) {
             this.logger.debug(`Tenant ID found in JWT: ${tenantId}`);
           } else {
-             this.logger.warn('tenantId property missing from JWT payload.');
+            this.logger.warn('tenantId property missing from JWT payload.');
           }
         }
       } catch (error) {
         // Ignore errors (like invalid/expired token), AuthGuard will handle rejection
-        this.logger.warn(`JWT verification failed in middleware: ${error.message}`);
+        this.logger.warn(
+          `JWT verification failed in middleware: ${error.message}`,
+        );
       }
     }
 
@@ -47,11 +49,11 @@ export class TenantMiddleware implements NestMiddleware {
     if (!tenantId) {
       // First check for direct tenant ID in headers
       tenantId = req.headers['x-tenant-id'] as string;
-      
+
       // If no direct tenant ID, check for tenant slug
       if (!tenantId) {
         const slug = req.query['tenant_slug'] as string;
-        
+
         if (slug) {
           this.logger.debug(`Tenant slug found in query: ${slug}`);
           try {
@@ -64,13 +66,15 @@ export class TenantMiddleware implements NestMiddleware {
               this.logger.warn(`Tenant with slug "${slug}" not found`);
             }
           } catch (error) {
-            this.logger.error(`Error resolving tenant from slug: ${error.message}`);
+            this.logger.error(
+              `Error resolving tenant from slug: ${error.message}`,
+            );
           }
         }
       }
-      
+
       tenantId = 'c9048c5c-abe8-4e73-930d-3d12a323a439'; //just to test
-      
+
       if (tenantId) {
         this.logger.debug(`Tenant ID determined: ${tenantId}`);
       }
@@ -80,17 +84,20 @@ export class TenantMiddleware implements NestMiddleware {
     if (tenantId) {
       (req as any).tenantId = tenantId;
       try {
-         const connection = await this.connectionProvider.getConnection(tenantId);
-         (req as any).tenantConnection = connection;
-         (req as any).tenantManager = connection.manager;
-         this.logger.debug(`Attached connection for tenant: ${tenantId}`);
+        const connection =
+          await this.connectionProvider.getConnection(tenantId);
+        (req as any).tenantConnection = connection;
+        (req as any).tenantManager = connection.manager;
+        this.logger.debug(`Attached connection for tenant: ${tenantId}`);
       } catch (error) {
-         this.logger.error(`Failed to get connection for tenant ${tenantId}: ${error.message}`);
-         // Decide how to handle connection errors - maybe block request?
-         // For now, just log and continue, service might fail later.
+        this.logger.error(
+          `Failed to get connection for tenant ${tenantId}: ${error.message}`,
+        );
+        // Decide how to handle connection errors - maybe block request?
+        // For now, just log and continue, service might fail later.
       }
     } else {
-       this.logger.warn('Tenant ID could not be determined by middleware.');
+      this.logger.warn('Tenant ID could not be determined by middleware.');
     }
 
     next(); // Proceed to guards, interceptors, etc.

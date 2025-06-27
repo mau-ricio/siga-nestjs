@@ -41,37 +41,48 @@ export class TenantsService extends BaseService<Tenant> {
     return tenant;
   }
 
-  async createInitialUser(tenantId: string, userData: CreateUserDto): Promise<void> {
+  async createInitialUser(
+    tenantId: string,
+    userData: CreateUserDto,
+  ): Promise<void> {
     this.logger.log(`Creating initial user for tenant ${tenantId}`);
-    
+
     try {
       // Get the tenant database connection using ConnectionProviderService
-      const tenantConnection = await this.connectionProviderService.getConnection(tenantId);
-      
+      const tenantConnection =
+        await this.connectionProviderService.getConnection(tenantId);
+
       // Create a transaction using the tenant connection
-      await tenantConnection.transaction(async (transactionalEntityManager: EntityManager) => {
-        // Get a repository for the User entity within the tenant's database
-        const userRepository = transactionalEntityManager.getRepository(User);
-        
-        // Hash the password - using the same approach as UsersService
-        const salt = await bcrypt.genSalt(10); // Explicitly set salt rounds to 10 (bcrypt default)
-        const hashedPassword = await bcrypt.hash(userData.password, salt);
-        
-        // Create user entity with tenant ID and hashed password
-        const user = userRepository.create({
-          ...userData,
-          password: hashedPassword,
-          tenantId, // Set the tenant ID explicitly
-        });
-        
-        // Save the user in the tenant's database
-        this.logger.log('Saving initial user to tenant database');
-        await userRepository.save(user);
-      });
-      
-      this.logger.log(`Initial user for tenant ${tenantId} created successfully`);
+      await tenantConnection.transaction(
+        async (transactionalEntityManager: EntityManager) => {
+          // Get a repository for the User entity within the tenant's database
+          const userRepository = transactionalEntityManager.getRepository(User);
+
+          // Hash the password - using the same approach as UsersService
+          const salt = await bcrypt.genSalt(10); // Explicitly set salt rounds to 10 (bcrypt default)
+          const hashedPassword = await bcrypt.hash(userData.password, salt);
+
+          // Create user entity with tenant ID and hashed password
+          const user = userRepository.create({
+            ...userData,
+            password: hashedPassword,
+            tenantId, // Set the tenant ID explicitly
+          });
+
+          // Save the user in the tenant's database
+          this.logger.log('Saving initial user to tenant database');
+          await userRepository.save(user);
+        },
+      );
+
+      this.logger.log(
+        `Initial user for tenant ${tenantId} created successfully`,
+      );
     } catch (error) {
-      this.logger.error(`Failed to create initial user for tenant ${tenantId}: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to create initial user for tenant ${tenantId}: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
@@ -81,7 +92,10 @@ export class TenantsService extends BaseService<Tenant> {
   }
 
   async findOne(id: string): Promise<Tenant> {
-    const tenant = await this.repository.findOne({ where: { id }, relations: ['database'] });
+    const tenant = await this.repository.findOne({
+      where: { id },
+      relations: ['database'],
+    });
     if (!tenant) {
       throw new NotFoundException(`Tenant with id ${id} not found`);
     }

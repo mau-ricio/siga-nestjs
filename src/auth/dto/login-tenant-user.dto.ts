@@ -9,5 +9,4 @@ export class LoginTenantUserDto {
   @ApiProperty({ description: 'Tenant password' })
   @IsString()
   password: string;
-
 }
