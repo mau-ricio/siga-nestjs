@@ -29,6 +29,8 @@ export class CreateFriendDto {
   @MaxLength(100, {
     message: 'Beverage preference cannot exceed 100 characters',
   })
-  @Transform(({ value }) => (value ? (value as string).toLowerCase() : value))
+  @Transform(({ value }: { value?: string }) =>
+    typeof value === 'string' ? value.toLowerCase() : value,
+  )
   beveragePreference?: string;
 }
