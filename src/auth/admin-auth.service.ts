@@ -21,9 +21,15 @@ export class AdminAuthService {
       throw new UnauthorizedException('Invalid username or password');
     }
 
-    const payload = { username: adminUser.username, sub: adminUser.id, role: 'admin' }; // Include user ID (sub) in payload
+    const payload = {
+      username: adminUser.username,
+      sub: adminUser.id,
+      role: 'admin',
+    }; // Include user ID (sub) in payload
     return {
-      accessToken: this.jwtService.sign(payload, { secret: process.env.ADMIN_JWT_SECRET }),
+      accessToken: this.jwtService.sign(payload, {
+        secret: process.env.ADMIN_JWT_SECRET,
+      }),
     };
   }
 }

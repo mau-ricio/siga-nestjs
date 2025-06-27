@@ -1,5 +1,22 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, HttpCode, HttpStatus, NotFoundException, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { TenantsService } from './tenants.service';
 import { CreateTenantDto } from './dto/create-tenant.dto';
@@ -37,7 +54,10 @@ export class TenantsController {
   @ApiOperation({ summary: 'Update tenant' })
   @ApiResponse({ status: 200, type: Tenant })
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() dto: UpdateTenantDto): Promise<Tenant> {
+  async update(
+    @Param('id') id: string,
+    @Body() dto: UpdateTenantDto,
+  ): Promise<Tenant> {
     return this.service.update(id, dto);
   }
 

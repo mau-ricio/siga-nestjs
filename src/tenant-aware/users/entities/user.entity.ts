@@ -3,7 +3,7 @@ import { TenantBase } from '../../../shared/entities/tenant-base.entity';
 import { TenantEntity } from '../../../shared/decorators/tenant-entity.decorator';
 
 // tenantId is automatically included by TenantBase
-@TenantEntity({ name: 'users'})
+@TenantEntity({ name: 'users' })
 export class User extends TenantBase {
   @PrimaryGeneratedColumn('uuid')
   id: string;

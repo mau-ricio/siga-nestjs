@@ -1,11 +1,22 @@
-import { Repository, DataSource, EntityTarget, DeepPartial, FindOptionsWhere, SaveOptions } from 'typeorm';
+import {
+  Repository,
+  DataSource,
+  EntityTarget,
+  DeepPartial,
+  FindOptionsWhere,
+  SaveOptions,
+} from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { TenantBase } from '../entities/tenant-base.entity';
 
 export class TenantRepository<T extends TenantBase> extends Repository<T> {
   private tenantId: string;
 
-  constructor(entity: EntityTarget<T>, dataSource: DataSource, tenantId: string) {
+  constructor(
+    entity: EntityTarget<T>,
+    dataSource: DataSource,
+    tenantId: string,
+  ) {
     super(entity, dataSource.createEntityManager());
     this.tenantId = tenantId;
   }
@@ -34,7 +45,10 @@ export class TenantRepository<T extends TenantBase> extends Repository<T> {
   }
 
   // Create and save an entity with tenant ID automatically set
-  async createAndSave(entityLike: DeepPartial<T>, options?: SaveOptions): Promise<T> {
+  async createAndSave(
+    entityLike: DeepPartial<T>,
+    options?: SaveOptions,
+  ): Promise<T> {
     // Create with tenant ID
     const entity = this.createWithTenant(entityLike);
     // Save and return the entity

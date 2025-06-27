@@ -1,9 +1,24 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Logger } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Logger,
+} from '@nestjs/common';
 import { UsersService } from './users.service'; // Restore
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 
 @ApiTags('users')
 @Controller('users')
@@ -39,8 +54,7 @@ export class UsersController {
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id); // Restore service call
   }
-  
-  
+
   @ApiOperation({ summary: 'Update a user' })
   @ApiResponse({ status: 200, description: 'User updated successfully' })
   @Patch(':id')

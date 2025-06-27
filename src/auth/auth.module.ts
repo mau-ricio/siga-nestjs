@@ -30,7 +30,12 @@ import { SharedModule } from '../shared/shared.module';
     forwardRef(() => SharedModule), // Add SharedModule using forwardRef to avoid circular dependencies
   ],
   controllers: [AdminAuthController, TenantAuthController],
-  providers: [AdminAuthService, TenantAuthService, AdminJwtStrategy, TenantJwtStrategy],
+  providers: [
+    AdminAuthService,
+    TenantAuthService,
+    AdminJwtStrategy,
+    TenantJwtStrategy,
+  ],
   // Export services and modules that might be needed elsewhere
   exports: [AdminAuthService, TenantAuthService, PassportModule, JwtModule],
 })
