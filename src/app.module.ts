@@ -1,4 +1,9 @@
-import { Module, NestModule, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
+import {
+  Module,
+  NestModule,
+  MiddlewareConsumer,
+  RequestMethod,
+} from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config'; // Import ConfigModule
 import * as path from 'path';
@@ -33,7 +38,10 @@ import { TenantMiddleware } from './shared/middlewares/tenant.middleware';
               type: 'sqlite',
               database: path.resolve(process.cwd(), 'admin.sqlite'),
             }),
-        entities: [__dirname + '/admin/**/*.entity{.ts,.js}', __dirname + '/tenant-aware/**/*.entity{.ts,.js}' ],
+        entities: [
+          __dirname + '/admin/**/*.entity{.ts,.js}',
+          __dirname + '/tenant-aware/**/*.entity{.ts,.js}',
+        ],
         synchronize: false,
       }),
     }),
@@ -48,7 +56,7 @@ import { TenantMiddleware } from './shared/middlewares/tenant.middleware';
   controllers: [AppController],
   providers: [
     AppService,
-     { provide: APP_INTERCEPTOR, useClass: TenantInterceptor }, // Temporarily remove global interceptor
+    { provide: APP_INTERCEPTOR, useClass: TenantInterceptor }, // Temporarily remove global interceptor
   ],
 })
 export class AppModule implements NestModule {

@@ -11,4 +11,12 @@ export class UpdateFriendDto extends PartialType(CreateFriendDto) {
     description: 'Optional phone number for the friend (international format)',
   })
   phoneNumber?: string;
+  
+  @ApiPropertyOptional({
+    example: 'vinho',
+    description: 'Preferred drink (4-100 characters, stored in lowercase)',
+    minLength: 4,
+    maxLength: 100,
+  })
+  preferredDrink?: string;
 }
