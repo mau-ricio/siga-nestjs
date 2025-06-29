@@ -4,7 +4,6 @@ import {
   IsString,
   IsOptional,
   IsPhoneNumber,
-} from 'class-validator';
   MinLength,
   MaxLength,
 } from 'class-validator';
@@ -34,6 +33,8 @@ export class CreateFriendDto {
   @IsString()
   @MinLength(4, { message: 'Preferred drink must have at least 4 characters' })
   @MaxLength(100, { message: 'Preferred drink cannot exceed 100 characters' })
-  @Transform(({ value }) => (typeof value === 'string' ? value.toLowerCase().trim() : value))
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.toLowerCase().trim() : value,
+  )
   preferredDrink?: string;
 }
