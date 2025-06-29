@@ -11,6 +11,9 @@ export class Friend extends TenantBase {
   @Column()
   name: string;
 
+  @Column({ nullable: true })
+  phoneNumber: string;
+
   @Column({ nullable: true, length: 100 })
   preferredDrink?: string;
 }
