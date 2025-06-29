@@ -103,12 +103,12 @@ describe('CreateFriendDto', () => {
   it('should handle null/undefined values correctly', () => {
     const dto1 = plainToClass(CreateFriendDto, {
       name: 'Alice',
-      preferredDrink: null
+      preferredDrink: null,
     });
 
     const dto2 = plainToClass(CreateFriendDto, {
       name: 'Alice',
-      preferredDrink: undefined
+      preferredDrink: undefined,
     });
 
     expect(dto1.preferredDrink).toBeNull();

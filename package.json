@@ -81,6 +81,15 @@
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"
   },
+  "overrides": {
+    "sqlite3": {
+      "node-gyp": "^10.0.0"
+    },
+    "rimraf": "^5.0.0",
+    "test-exclude": {
+      "glob": "^10.0.0"
+    }
+  },
   "jest": {
     "moduleFileExtensions": [
       "js",
