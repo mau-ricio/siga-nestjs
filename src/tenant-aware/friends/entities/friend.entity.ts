@@ -1,5 +1,5 @@
 // tenantId is automatically included by TenantBase
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, PrimaryGeneratedColumn } from 'typeorm';
 import { TenantBase } from '../../../shared/entities/tenant-base.entity';
 import { TenantEntity } from '../../../shared/decorators/tenant-entity.decorator';
 
@@ -10,4 +10,7 @@ export class Friend extends TenantBase {
 
   @Column()
   name: string;
+
+  @Column({ nullable: true, length: 100 })
+  preferredDrink?: string;
 }

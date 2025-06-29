@@ -6,9 +6,7 @@ import { LoginAdminUserDto } from './dto/login-admin-user.dto';
 @ApiTags('admin-auth')
 @Controller('auth/admin')
 export class AdminAuthController {
-  constructor(
-    private readonly adminAuthService: AdminAuthService,
-  ) {}
+  constructor(private readonly adminAuthService: AdminAuthService) {}
 
   @ApiOperation({ summary: 'Admin login' })
   @ApiBody({ type: LoginAdminUserDto })
