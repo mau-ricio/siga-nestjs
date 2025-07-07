@@ -184,19 +184,6 @@ Note: Tenant users are not pre-created. They can be created together with tenant
 - [ ] Automated testing (coming soon)
 
 
-## Development Strategy
-
-This repository maintains two primary development tracks:
-
-1. **Main Branch**: Contains the clean boilerplate implementation without any specialized business logic
-2. **Specialized Implementation**: Available in the `example-api` branch, showing a concrete implementation
-
-### When to Use Each Branch:
-
-- **Starting a New SaaS Project**: Fork or clone the main branch
-- **Learning by Example**: Review the specialized-system branch to see how to adapt the boilerplate
-- **Contributing**: Core improvements should target the main branch
-
 ## Contributing
 
 Pull requests and suggestions are welcome! Open an issue to discuss improvements or report bugs.
