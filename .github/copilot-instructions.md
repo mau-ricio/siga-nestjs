@@ -15,7 +15,7 @@ This project is a NestJS SaaS boilerplate with advanced multitenancy support usi
 This project implements advanced multitenancy that differs from traditional single-database approaches:
 - **Central admin database** stores tenant metadata and database configurations
 - **Dynamic database connections** are created at runtime for each tenant
-- **Complete data isolation** through separate physical databases
+- **Complete data isolation** through separate physical databases when needed
 - **Dual migration system** for admin and tenant entities
 - **Flexible deployment** supporting shared or dedicated databases per tenant
 
@@ -95,8 +95,6 @@ Use these comment patterns to generate helpful code:
 // Generate a tenant entity extending TenantBase with @TenantEntity decorator
 // Generate a migration for tenant database schema changes
 // Generate admin authentication endpoints with admin-jwt strategy
-// Generate middleware to extract tenant information from request headers
-// Generate interceptor to inject tenant context into requests
 // Generate repository with tenant-aware filtering using TenantRepository
 ```
 
